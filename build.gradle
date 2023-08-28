@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group = 'dev.ag6.discordoauth'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.javalin:javalin:5.6.1'
+    implementation 'org.slf4j:slf4j-simple:2.0.7'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'io.github.arniu:dotenv:0.1.1'
+    implementation 'io.github.arniu:dotenv:0.1.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
