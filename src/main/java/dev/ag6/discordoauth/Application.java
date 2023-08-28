@@ -11,7 +11,7 @@ public class Application {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
 
-        javalin.get("/", ctx -> {
+        javalin.get("/oauth2/discord/", ctx -> {
             String code = ctx.queryParam("code");
             if (code != null) {
                 RequestBody body = new FormEncodingBuilder()
