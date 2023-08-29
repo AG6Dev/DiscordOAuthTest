@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.okhttp.*;
 import io.javalin.Javalin;
+import io.javalin.http.util.CookieStore;
 
 public class Application {
     public static void main(String[] args) {
@@ -18,7 +19,7 @@ public class Application {
                         .add("client_id", args[0])
                         .add("client_secret", args[1])
                         .add("scope", "identify guilds email")
-                        .add("redirect_uri", "http://localhost:8080")
+                        .add("redirect_uri", "http://localhost:8080/oauth2/discord")
                         .add("grant_type", "authorization_code")
                         .add("code", code)
                         .build();
@@ -28,7 +29,6 @@ public class Application {
                         .header("Content-Type", "application/x-www-form-urlencoded")
                         .post(body)
                         .build();
-
 
                 Response response = client.newCall(tokenRequest).execute();
                 String responseJson = response.body().string();
@@ -57,7 +57,20 @@ public class Application {
                 System.out.println(guildResponseJson);
 
                 ctx.result("Hello " + infoJsonObject.get("username").getAsString() + "!");
+
+                CookieStore store = ctx.cookieStore();
+                String oauthTest = store.get("oauthtest").toString();
+                if(oauthTest == null) {
+                    store.set("oauthtest", "test123");
+                } else {
+                    System.out.println(oauthTest);
+                }
+                return;
             }
+            ctx.result("Cannot find code!");
+        });
+
+        javalin.post("/", ctx -> {
         });
     }
 }
