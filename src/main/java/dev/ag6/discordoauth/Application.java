@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.okhttp.*;
 import io.javalin.Javalin;
-import io.javalin.http.util.CookieStore;
 
 public class Application {
+    private static final String DISCORD_REDIRECT_URI = "https://discord.com/api/oauth2/authorize?client_id=1145769001557954580&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Foauth2%2Fdiscord&response_type=code&scope=identify%20guilds%20email";
+
     public static void main(String[] args) {
         Javalin javalin = Javalin.create().start(8080);
         OkHttpClient client = new OkHttpClient();
@@ -35,6 +36,11 @@ public class Application {
                 System.out.println(responseJson);
                 JsonObject jsonObject = gson.fromJson(responseJson, JsonObject.class);
 
+                if(jsonObject.get("error") != null) {
+                    ctx.result("Error: " + jsonObject.get("error").getAsString() + "  " + jsonObject.get("error_description").getAsString());
+                    return;
+                }
+
                 String accessToken = jsonObject.get("access_token").getAsString();
                 String tokenType = jsonObject.get("token_type").getAsString();
 
@@ -57,20 +63,10 @@ public class Application {
                 System.out.println(guildResponseJson);
 
                 ctx.result("Hello " + infoJsonObject.get("username").getAsString() + "!");
-
-                CookieStore store = ctx.cookieStore();
-                String oauthTest = store.get("oauthtest").toString();
-                if(oauthTest == null) {
-                    store.set("oauthtest", "test123");
-                } else {
-                    System.out.println(oauthTest);
-                }
-                return;
+            } else {
+                ctx.redirect(DISCORD_REDIRECT_URI);
             }
-            ctx.result("Cannot find code!");
-        });
-
-        javalin.post("/", ctx -> {
+            ctx.redirect(DISCORD_REDIRECT_URI);
         });
     }
 }
